@@ -53,3 +53,19 @@ Running
 - *docker*: `$ docker run --link SomeRedisServerContainer -p 6800:6800 alash3al/scrapyd-go -redis redis://SomeRedisServerContainer:6379/1`
 - *source*: `$ scrapyd-go -redis redis://localhost:6379/1`
 
+Contributing
+=============
+- Fork the repo
+- Create a feature branch
+- Push your changes
+- Create a pull request
+
+License
+========
+Apache License v2.0
+
+Author
+=======
+- Mohamed Al Ashaal
+- Software Engineer
+- m7medalash3al@gmail.com
