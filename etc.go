@@ -32,7 +32,7 @@ func getProjectLatestVersion(project string) string {
 
 func getProjectSpiders(project, version string) ([]string, error) {
 	out := bytes.NewBufferString("")
-	cmd := exec.Command("python", "-m", "scrapy", "list")
+	cmd := exec.Command(*flagDefaultPythonBin, "-m", "scrapy", "list")
 	cmd.Dir = filepath.Join(*flagCacheDir, project, "src", version)
 	cmd.Stderr = ioutil.Discard
 	cmd.Stdout = out

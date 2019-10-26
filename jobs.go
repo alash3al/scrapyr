@@ -56,7 +56,7 @@ func (j CrawlingJob) cmd() *exec.Cmd {
 
 	out := NewRedisWriter(redisLogsPrefix + j.ID)
 
-	cmd := exec.Command("python", args...)
+	cmd := exec.Command(*flagDefaultPythonBin, args...)
 	cmd.Dir = filepath.Join(*flagCacheDir, j.Project, "src", j.Version)
 	cmd.Stdout = out
 	cmd.Stderr = out
