@@ -33,6 +33,8 @@ Configurations
         the maximum jobs/logs to keep in memory (default 1000000)
   -poll int
         time in millisecond between each poll operation from queue(s) (default 10)
+  -python string
+        the python binary to use (default "python3")
   -redis string
         the redis server address (default "redis://:somepass@localhost:6379/1")
   -sync int

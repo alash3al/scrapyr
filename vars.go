@@ -12,7 +12,7 @@ import (
 
 var (
 	flagListenAddr       = flag.String("listen", ":6800", "the address to bind to")
-	flagRedisAddr        = flag.String("redis", "redis://:somepass@localhost:6379/1", "the redis server address")
+	flagRedisAddr        = flag.String("redis", "redis://localhost:6379/1", "the redis server address in this format redis://[:[password]@]host[:port]/db_number")
 	flagSyncInterval     = flag.Int64("sync", 15, "time in seconds between each sync operation")
 	flagCacheDir         = flag.String("dir", ".scrapyd-go", "the directory to use for local caching")
 	flagMaxWorkers       = flag.Int("workers", runtime.NumCPU(), "the maximum workers count")
