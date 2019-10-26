@@ -6,8 +6,8 @@ Why
 ===
 [scrapyd](https://github.com/scrapy/scrapyd) isn't bad, but it is very stateful, it isn't that easy to deploy in a destributed environment like `k8s`, also I wanted to add more features, so I started as a drop-in replacement of `scrapyd` but writing in modern & scalable environment like `go` for restful server and `redis` as centeralized registry.
 
-Implementation
-==============
+TODOs
+======
 - [x] `schedule.json` 
 - [x] `cancel.json` 
 - [x] `addversion.json`
@@ -40,7 +40,7 @@ Configurations
   -sync int
         time in seconds between each sync operation (default 15)
   -workers int
-        the maximum workers count (default 8)
+        the maximum workers count (default cpu-cores-count)
 ```
 
 Installation
