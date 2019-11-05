@@ -4,7 +4,7 @@ scrapyd-go
 
 Why
 ===
-[scrapyd](https://github.com/scrapy/scrapyd) isn't bad, but it is very stateful, it isn't that easy to deploy it in a destributed environment like `k8s`, as well as I wanted to add more features, so I started this project as a drop-in replacement for `scrapyd` but writing in modern & scalable environment like `go` for restful server and `redis` as centeralized registry.
+[scrapyd](https://github.com/scrapy/scrapyd) isn't bad, but it is very stateful, it isn't that easy to deploy it in a distributed environment like `k8s`, as well as I wanted to add more features, so I started this project as a drop-in replacement for `scrapyd` but writing in modern & scalable environment like `go` for restful server and `redis` as centeralized registry.
 
 TODOs
 ======
