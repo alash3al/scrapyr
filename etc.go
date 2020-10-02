@@ -2,44 +2,52 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
-	"net"
+	"errors"
+	"fmt"
+	"log"
+	"os"
 	"os/exec"
-	"path/filepath"
-	"strings"
+	"time"
 )
 
-func resolveHostIP() string {
-	netInterfaceAddresses, err := net.InterfaceAddrs()
+func cmd(timeoutDuration time.Duration, argv []string, output *string) error {
+	stdout, stderr := bytes.NewBufferString(""), bytes.NewBufferString("")
 
-	if err != nil {
-		return ""
+	c := exec.Command(argv[0], argv[1:]...)
+	c.Dir = config.Scrapy.ProjectDir
+	c.Stderr = stderr
+	c.Stdout = stdout
+
+	timeoutReached := false
+
+	if timeoutDuration > 0 {
+		time.AfterFunc(timeoutDuration, func() {
+			c.Process.Signal(os.Kill)
+			c.Process.Signal(os.Kill)
+
+			timeoutReached = true
+		})
 	}
 
-	for _, netInterfaceAddress := range netInterfaceAddresses {
-		if networkIP, ok := netInterfaceAddress.(*net.IPNet); ok && !networkIP.IP.IsLoopback() && networkIP.IP.To4() != nil {
-			return networkIP.IP.String()
-		}
+	if err := c.Run(); err != nil {
+		return err
 	}
-	return ""
+
+	if stderr.Len() > 0 {
+		return errors.New(stderr.String())
+	}
+
+	if output != nil {
+		*output = stdout.String()
+	}
+
+	if timeoutReached {
+		return fmt.Errorf("the execution time exceeded (%s)", timeoutDuration.String())
+	}
+
+	return nil
 }
 
-func getProjectLatestVersion(project string) string {
-	all := redisConn.LRange(redisVersionsPrefix+project, 0, -1).Val()
-
-	return all[0]
-}
-
-func getProjectSpiders(project, version string) ([]string, error) {
-	out := bytes.NewBufferString("")
-	cmd := exec.Command(*flagDefaultPythonBin, "-m", "scrapy", "list")
-	cmd.Dir = filepath.Join(*flagCacheDir, project, "src", version)
-	cmd.Stderr = ioutil.Discard
-	cmd.Stdout = out
-
-	if err := cmd.Run(); err != nil {
-		return nil, err
-	}
-
-	return strings.Split(strings.TrimSpace(out.String()), "\n"), nil
+func catchErr(err error) {
+	log.Println(err)
 }
