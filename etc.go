@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -50,4 +51,16 @@ func cmd(timeoutDuration time.Duration, argv []string, output *string) error {
 
 func catchErr(err error) {
 	log.Println(err)
+}
+
+func incrRunning(by int64) {
+	redisConn.IncrBy(context.Background(), runningCounterName, by)
+}
+
+func incrFinished(by int64) {
+	redisConn.IncrBy(context.Background(), FinishedCounterName, by)
+}
+
+func incrElapsedTime(by int64) {
+	redisConn.IncrBy(context.Background(), totalTimeCounter, by)
 }

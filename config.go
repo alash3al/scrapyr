@@ -20,6 +20,8 @@ type Config struct {
 	} `hcl:"scrapy"`
 
 	Workers map[string]WorkerConfig `hcl:"worker"`
+
+	SettingsPy string `hcl:"settings_py"`
 }
 
 type WorkerConfig struct {
@@ -36,7 +38,7 @@ const (
 )
 
 var (
-	WorkerMethodQueueNameMap = map[string]string{
+	WorkerMethodQueueNameMap = map[WorkerMethod]string{
 		"fifo":   fifoQueueName,
 		"lifo":   lifoQueueName,
 		"weight": weightQueueName,

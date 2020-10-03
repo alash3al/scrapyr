@@ -4,7 +4,7 @@ listen_addr = ":1993"
 # redis connection string
 # it uses url-style connection string
 # example: redis://username:password@hostname:port/database_number
-redis_dsn = "redis://localhost:6378/1"
+redis_dsn = "redis://127.0.0.1:6378/1"
 
 scrapy {
     project_dir = "${HOME}/playground/tstscrapy"
@@ -19,7 +19,7 @@ worker worker1 {
     // lifo: last in, first out
     // fifo: first in, first out
     // weight: max weight, first out
-    use = "fifo"
+    use = "weight"
 
     // max processes to be executed in the same time for this workers
     max_procs = 5
@@ -29,7 +29,7 @@ worker worker1 {
 # sometimes you may need to control the `ProjectNAme/ProjectName/settings.py` file from here
 # so we did this special key which mounts the contents of it into `settings.py` file.
 settings_py = <<PYTHON
-# Scrapy settings for tstscrapy2 project
+# Scrapy settings for tstscrapy project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -38,16 +38,17 @@ settings_py = <<PYTHON
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'tstscrapy2'
+BOT_NAME = 'tstscrapy'
 
-SPIDER_MODULES = ['tstscrapy2.spiders']
-NEWSPIDER_MODULE = 'tstscrapy2.spiders'
+SPIDER_MODULES = ['tstscrapy.spiders']
+NEWSPIDER_MODULE = 'tstscrapy.spiders'
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'tstscrapy2 (+http://www.yourdomain.com)'
+#USER_AGENT = 'tstscrapy (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -67,34 +68,34 @@ ROBOTSTXT_OBEY = True
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
+# DEFAULT_REQUEST_HEADERS = {
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 #   'Accept-Language': 'en',
-#}
+# }
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'tstscrapy2.middlewares.Tstscrapy2SpiderMiddleware': 543,
-#}
+# SPIDER_MIDDLEWARES = {
+#    'tstscrapy.middlewares.TstscrapySpiderMiddleware': 543,
+# }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'tstscrapy2.middlewares.Tstscrapy2DownloaderMiddleware': 543,
-#}
+# DOWNLOADER_MIDDLEWARES = {
+#    'tstscrapy.middlewares.TstscrapyDownloaderMiddleware': 543,
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
+# EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+# }
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'tstscrapy2.pipelines.Tstscrapy2Pipeline': 300,
-#}
+# ITEM_PIPELINES = {
+#    'tstscrapy.pipelines.TstscrapyPipeline': 300,
+# }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -116,5 +117,7 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+DOWNLOAD_TIMEOUT = 10
 PYTHON
 

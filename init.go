@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"path"
+	"strings"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -10,10 +15,16 @@ import (
 var (
 	config    *Config
 	redisConn *redis.Client
+)
 
+const (
 	fifoQueueName   = "scrapyr.queue::fifo"
 	lifoQueueName   = "scrapyr.queue::lifo"
 	weightQueueName = "scrapyr.queue::weight"
+
+	runningCounterName  = "scrapyr.running.counter"
+	FinishedCounterName = "scrapyr.finished.counter"
+	totalTimeCounter    = "scrapyr.elapsed_time.total"
 )
 
 func init() {
@@ -42,6 +53,17 @@ func init() {
 		}
 	}
 
+	// mount settings.py if needed
+	{
+		if strings.TrimSpace(config.SettingsPy) != "" {
+			config.SettingsPy = "# Scrapyr Mounted File \n#--------------------------------------\n" + config.SettingsPy
+			filename := path.Join(config.Scrapy.ProjectDir, path.Base(config.Scrapy.ProjectDir), "settings.py")
+			if err := ioutil.WriteFile(filename, []byte(config.SettingsPy), 0644); err != nil {
+				log.Fatal(err.Error())
+			}
+		}
+	}
+
 	// workers
 	{
 		for workerName, workerConfig := range config.Workers {
@@ -49,30 +71,34 @@ func init() {
 				for i := 0; i < workerConfig.MaxProcs; i++ {
 					go (func() {
 						for {
-							var items []string
+							var item string
 
 							if workerConfig.Method == WorkerMethodFIFO {
-								items = redisConn.BLPop(context.Background(), 0, fifoQueueName).Val()
+								item = redisConn.BLPop(context.Background(), 0, fifoQueueName).Val()[1]
 							} else if workerConfig.Method == WorkerMethodLIFO {
-								items = redisConn.BRPop(context.Background(), 0, lifoQueueName).Val()
+								item = redisConn.BRPop(context.Background(), 0, lifoQueueName).Val()[1]
 							} else if workerConfig.Method == WorkerMethodWeight {
 								val := redisConn.BZPopMax(context.Background(), 0, weightQueueName).Val()
-								items = []string{val.Member.(string)}
+								if nil == val {
+									continue
+								}
+								item = val.Member.(string)
 							}
 
-							if len(items) < 1 {
-								continue
-							}
-
-							job, err := UnserializeJob(items[0])
+							job, err := UnserializeJob(item)
 							if err != nil {
-								catchErr(err)
+								catchErr(fmt.Errorf("unserializeJOB:: %s", err.Error()))
 								continue
 							}
 
+							incrRunning(1)
+							startedAt := time.Now()
 							if _, err := job.Dispatch(); err != nil {
-								catchErr(err)
+								catchErr(fmt.Errorf("dispatch:: %s", err.Error()))
 							}
+							incrFinished(1)
+							incrRunning(-1)
+							incrElapsedTime(int64(time.Now().Sub(startedAt).Seconds()))
 						}
 					})()
 				}

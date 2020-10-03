@@ -54,6 +54,10 @@ func (j Job) Dispatch() (interface{}, error) {
 
 	jobfilename := filepath.Join(config.Scrapy.ItemsDir, j.ID+".json")
 
+	if j.Args == nil {
+		j.Args = map[string]string{}
+	}
+
 	j.Args["jobid"] = j.ID
 	j.Args["jobfilename"] = jobfilename
 
