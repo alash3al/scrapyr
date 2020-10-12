@@ -172,6 +172,9 @@ DOWNLOAD_TIMEOUT = 10
 PYTHON
 
 ```
+Install
+========
+> you can download the latest binary build from the [releases](https://github.com/alash3al/scrapyr/releases) page or by using [docker](https://hub.docker.com/r/alash3al/scrapyr) directly.
 
 Contributing
 =============
