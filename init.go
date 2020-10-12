@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -32,7 +33,12 @@ func init() {
 	var err error
 
 	{
-		config, err = ParseConfigFile("scrapyr.hcl")
+		configFileName := "scrapyr.hcl"
+		if len(os.Args) > 1 {
+			configFileName = os.Args[1]
+		}
+
+		config, err = ParseConfigFile(configFileName)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
